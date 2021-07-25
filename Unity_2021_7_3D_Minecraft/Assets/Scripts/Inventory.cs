@@ -6,15 +6,16 @@ using System.Collections.Generic;       // 引用 系統 集合 一般 API
 /// 道具欄管理系統
 /// 吃到道具後累加
 /// 道具欄顯示系統
-/// 裝備道具欄
+/// 裝備道具欄介面
+/// 將資訊儲存到項目 Item - 物件與數量 
 /// </summary>
 public class Inventory : MonoBehaviour
 {
     #region 欄位
-    [Header("道具清單")]
     /// <summary> 
     /// 道具清單
     /// </summary>
+    [Header("道具清單")]    
     public List<Prop> props = new List<Prop>();
     [Header("道具欄")]
     public GameObject goInventory;
@@ -22,7 +23,10 @@ public class Inventory : MonoBehaviour
     public InventoryItem[] itemEquipment;
     [Header("道具欄 - 24 個")]
     public InventoryItem[] itemProp;
-
+    [Header("裝備的道具欄資訊 - 5 個")]
+    public Item[] itemDataEquipment;
+    [Header("道具欄資訊 - 24 個")]
+    public Item[] itemDataProp;
     #endregion
 
     #region 事件
@@ -48,7 +52,6 @@ public class Inventory : MonoBehaviour
         // 如果 按下 E 道具就設定為相反的顯示狀態 
         if (Input.GetKeyDown(KeyCode.E)) goInventory.SetActive(!goInventory.activeInHierarchy);
     }
-
     /// <summary> 
     /// 添加道具：玩家吃到道具後呼叫
     /// </summary>
@@ -58,15 +61,13 @@ public class Inventory : MonoBehaviour
         ObjectPoolUsing(prop.gameObject);       // 丟進物件池
         ShowPropInInventory(prop);
     }
-
-
     /// <summary> 
     /// 顯示道具欄與裝備欄上的道具
     /// </summary>
     public void ShowPropInInventory(Prop prop)
     {
-        if (UpdateItem(prop, itemEquipment))
-        UpdateItem(prop, itemProp);
+        if (UpdateItem(prop, itemEquipment, itemDataEquipment))
+        UpdateItem(prop, itemProp, itemDataProp);
     }
 
     /// <summary> 
@@ -75,7 +76,7 @@ public class Inventory : MonoBehaviour
     /// <param name="pror">吃到的道具資訊</param>
     /// <param name="items">道具欄陣列 - 裝備或者道具</param>
     /// <returns>道具是否放滿</returns>
-    private bool UpdateItem(Prop prop, InventoryItem[] items)
+    private bool UpdateItem(Prop prop, InventoryItem[] items, Item[] itemData)
     {
         for (int i = 0; i < itemProp.Length; i++)                                            // 迴圈執行 裝備道具欄 - 5 個        
         {
@@ -86,6 +87,7 @@ public class Inventory : MonoBehaviour
                 int count = props.Where(x => x.sprProp == prop.sprProp).ToList().Count;
 
                 items[i].textProp.text = count + "";                                          // 更新數量 
+                UpdateItemData(i, prop, itemData,count);
                 return false; 
             }
 
@@ -95,10 +97,23 @@ public class Inventory : MonoBehaviour
                 items[i].imgProp.enabled = true;                                              // 更新圖片 
                 items[i].imgProp.sprite = prop.sprProp;                                       // 放入圖片
                 items[i].textProp.text = 1 + "";                                              // 更新數量
+                UpdateItemData(i, prop, itemData, 1);
                 return false;                                                                 // 跳出 break 僅跳出迴圈、return 跳出此方法
             }
         }
         return true;                                                                          //已經塞滿道具
+    }
+
+    /// <summary>
+    /// 更新裝備與道具的 Item Class 物件與數量資訊  
+    /// </summary>    
+    private void UpdateItemData(int index,Prop prop, Item[] itemData, int count)
+    {
+        itemDataEquipment[index].goItem = prop.goProp;
+
+        itemData[index].goItem = prop.goProp;
+        itemData[index].count = count;
+
     }
 
     /// <summary> 
