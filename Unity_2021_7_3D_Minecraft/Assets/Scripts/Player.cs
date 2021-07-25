@@ -17,7 +17,11 @@ public class Player : MonoBehaviour
     /// 道具管理器
     /// </summary>
     private Inventory inventory;
-
+    /// <summary>
+    /// 裝備管理器
+    /// </summary>
+    private EquipmenManager equipmentManage;
+            
     private void Start()
     {
         rig = GetComponent<Rigidbody>();
@@ -26,11 +30,13 @@ public class Player : MonoBehaviour
         traCamera = GameObject.Find("攝影機").transform;
 
         inventory = GameObject.Find("道具管理器").GetComponent<Inventory>();
+        equipmentManage = GameObject.Find("裝備管理器").GetComponent<EquipmenManager>();
     }
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
+        // 開發裝備系統時先隱藏 
+        Gizmos.color = Color.clear;
         // 圖示.繪製射線(中心點、射線方向)
         Gizmos.DrawRay(traCamera.position, traCamera.forward * rangeCollection);
     }
@@ -77,7 +83,8 @@ public class Player : MonoBehaviour
     {
         if (prop.tag=="可以吃的道具")
         {
-            inventory.AddProp(prop.GetComponent<Prop>());           
+            inventory.AddProp(prop.GetComponent<Prop>());
+            equipmentManage.ShowEquipment();
         }
     }   
 
