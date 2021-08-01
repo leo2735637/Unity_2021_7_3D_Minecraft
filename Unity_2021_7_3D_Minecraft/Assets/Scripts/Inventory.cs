@@ -131,7 +131,7 @@ public class Inventory : MonoBehaviour
 
         #region 關閉元件
         obProp.GetComponent<Collider>().enabled = false;
-        obProp.GetComponent<ConstantForce>().enabled = false;        
+        obProp.GetComponent<ConstantForce>().enabled = false; 
         obProp.GetComponent<Rigidbody>().useGravity = false;
         obProp.GetComponent<Rigidbody>().Sleep();
         #endregion
