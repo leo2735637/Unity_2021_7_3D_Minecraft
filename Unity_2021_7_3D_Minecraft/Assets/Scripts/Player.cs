@@ -57,10 +57,12 @@ public class Player : MonoBehaviour
 
     /// <summary>
     /// 採集：繪製射線並且判定是否攻擊以及採集物件
+    /// 條件：判定裝備管理器、當前的裝備類型、不是地形物件才能採集、包含：無、武器
     /// </summary>
     private void Collection()
     {
-        if (Input.GetKeyDown(KeyCode.Mouse0))
+
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !EquipmenManager.instance.usingTerrainObject)
         {
             //射線碰撞資訊
             RaycastHit hit;

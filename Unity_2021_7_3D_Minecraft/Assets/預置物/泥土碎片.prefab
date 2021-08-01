@@ -109,6 +109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sprProp: {fileID: 21300000, guid: 739835c3a6644cf4fae8f09d48623141, type: 3}
   goProp: {fileID: 3881675639746854055, guid: 64ae186641a6d234f949f19b2a20b914, type: 3}
+  propType: 1
 --- !u!1 &7296526122552681530
 GameObject:
   m_ObjectHideFlags: 0

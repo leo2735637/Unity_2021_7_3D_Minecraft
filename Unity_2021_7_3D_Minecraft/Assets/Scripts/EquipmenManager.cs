@@ -10,7 +10,19 @@ public class EquipmenManager : MonoBehaviour
 {
     #region 欄位
     [Header("裝備道具 1 - 5")]
-    public Transform[] traEquipmentItem;      
+    public Transform[] traEquipmentItem;    
+    [Header("蓋地形的範圍"), Range(0, 30)]
+    public float rangeBuildTerrain = 3;
+    [Header("地形物件高度")]
+    public float heightTerrainObject = 0.8f;
+    /// <summary>
+    /// 使用過的道具物件資訊
+    /// </summary>
+    public List<GameObject> listUsingItem = new List<GameObject>();
+    /// <summary>
+    /// 是否使用地形物件
+    /// </summary>
+    public bool usingTerrainObject;
 
     /// <summary>
     /// 當前裝備的編號：0 - 4
@@ -31,26 +43,26 @@ public class EquipmenManager : MonoBehaviour
     /// <summary>
     /// 顯示道具位置：手部骨架內的空物件
     /// </summary>
-    private Transform traPropPosition;
-    #endregion
-
-    [Header("蓋地形的範圍"), Range(0, 30)]
-    public float rangeBuildTerrain = 3;
-    [Header("地形物件高度")]
-    public float heightTerrainObject = 0.8f;
-
-    /// <summary>
-    /// 是否使用地形物件
-    /// </summary>
-    private bool usingTerrainObject;
+    private Transform traPropPosition; 
     /// <summary>
     /// 玩家攝影機物件
     /// </summary>
     private Transform playerCamera;
+    #endregion
 
-    #region 事件    
+
+    /// <summary>
+    /// 此類別的實體
+    /// 欄位添加靜態修飾詞
+    /// 1. 可以使用 類別 靜態屬性 存取 
+    /// 2.  切換場景時此靜態欄位不會還原為預設值
+    /// </summary>
+    public static EquipmenManager instance;
+
     private void Start()
     {
+        instance = this;        // 將此類別保存至欄位內
+
         traSelectionOutline = GameObject.Find("選取邊框").transform;
         rectSelectionOutline = traSelectionOutline.GetComponent<RectTransform>();
         inventory = GameObject.Find("道具管理器").GetComponent<Inventory>();
@@ -91,11 +103,9 @@ public class EquipmenManager : MonoBehaviour
             Gizmos.color = new Color(0.5f, 0.1f, 0.8f, 0.1f);
             Gizmos.DrawWireCube(posCalculate, new Vector3(1.5f, heightTerrainObject - 0.5f, 0.5f));
             Gizmos.DrawWireCube(posCalculate, new Vector3(0.5f, heightTerrainObject + 0.5f, 0.5f));
-            Gizmos.DrawWireCube(posCalculate, new Vector3(0.5f, heightTerrainObject - 0.5f, 1.5f));
-            #endregion
+            Gizmos.DrawWireCube(posCalculate, new Vector3(0.5f, heightTerrainObject - 0.5f, 1.5f));            
         }
     }
-
 
     /// <summary>
     /// 點擊並使用裝備
@@ -107,7 +117,6 @@ public class EquipmenManager : MonoBehaviour
            if(usingTerrainObject) CheckTerrainObject();
         }
     }
-
 
     /// <summary>
     /// 檢查是否能蓋地形物件並建立地形物件
@@ -179,10 +188,7 @@ public class EquipmenManager : MonoBehaviour
         ShowEquipment();
     }
 
-    /// <summary>
-    /// 使用過的道具物件資訊
-    /// </summary>
-    public List<GameObject> listUsingItem = new List<GameObject>();
+    
 
     /// <summary>
     /// 顯示裝備：
@@ -192,16 +198,20 @@ public class EquipmenManager : MonoBehaviour
     public void ShowEquipment()
     {
         // 隱藏所有使用過的道具
-         for (int i = 0; i < listUsingItem.Count; i++) listUsingItem[i].SetActive(false);
+        for (int i = 0; i < listUsingItem.Count; i++) listUsingItem[i].SetActive(false);
 
         Item itemData = inventory.itemDataEquipment[indexEquipment];        // 目前的道具資料 
 
-            usingTerrainObject = false;         // 不是使用地形物件
+        // 不管道具是否為空的 都要更新 類型    
+        // 如果 道具不是地形物件類型 就 不是地形物件
+        if (itemData.propType == PropType.TerrainObject) usingTerrainObject = false;
+        // 否則 道具是地形物件類型 就 是使用地形物件
+        else if (itemData.propType == PropType.TerrainObject) usingTerrainObject = true;
 
+        // 如果 有道具物件 才更新道具資訊 
         if (itemData.goItem)
         {
-            usingTerrainObject = true;          // 是使用地形物件
-
+            
             // 判斷 清單內的道具 是否包含 當前選取的道具，列：草地(clone) 包含 草地 就表示用過
             int count = listUsingItem.Where(x => x.name.Contains(itemData.goItem.name)).ToList().Count;
             
