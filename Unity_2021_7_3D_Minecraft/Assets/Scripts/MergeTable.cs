@@ -3,7 +3,8 @@
 [CreateAssetMenu(fileName ="合成表",menuName ="leo/合成表")]
 public class MergeTable : ScriptableObject
 {
-    
+    [Header("所有合成資料")]
+    public MergeData[] allMergeData;
 }
 
 /// <summary>

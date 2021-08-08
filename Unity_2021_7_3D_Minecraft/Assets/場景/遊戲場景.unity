@@ -5283,6 +5283,8 @@ MonoBehaviour:
   - {fileID: 2115400073}
   - {fileID: 1723873401}
   mergeTable: {fileID: 11400000, guid: 04de47952cee5c04ab82b23c014812f1, type: 2}
+  resultInventoryItem: {fileID: 0}
+  resultItem: {fileID: 0}
 --- !u!4 &1477544941
 Transform:
   m_ObjectHideFlags: 0

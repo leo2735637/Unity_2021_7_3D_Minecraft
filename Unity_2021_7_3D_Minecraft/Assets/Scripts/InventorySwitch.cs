@@ -123,6 +123,11 @@ public class InventorySwitch : MonoBehaviour
     }
 
     /// <summary>
+    /// 是否選取合成結果
+    /// </summary>
+    private bool chooseResult;
+
+    /// <summary>
     /// 更新道具資訊：圖片、數量、道具物件、類型
     /// </summary>    
     private void UpdateItem(InventoryItem chooseInventory, InventoryItem updateInvemtoyr, Item chooseItem, Item updateItem)
@@ -144,6 +149,33 @@ public class InventorySwitch : MonoBehaviour
 
         //通知裝備管理
         EquipmenManager.instance.ShowEquipment();
+
+        if (chooseInventory.gameObject.name=="合成結果")
+        {
+            chooseResult = true;
+        }
+        else if (chooseInventory&&updateInvemtoyr.gameObject.name!="合成結果") 
+        {
+            chooseResult = false;
+            ClearItemMerge();
+        }
+    }
+
+    /// <summary>
+    /// 清空素材 1 ~4 的資料
+    /// </summary>
+    private void ClearItemMerge()
+    {
+        for (int i = 0; i < itemMerge.Length; i++)
+        {
+            InventoryItem inventory = itemMerge[i].GetComponent<InventoryItem>();
+            inventory.imgProp.sprite = null;
+            inventory.imgProp.enabled = false;
+            inventory.textProp.text = "";
+            itemMerge[i].count = 0;
+            itemMerge[i].goItem = null;
+            itemMerge[i].propType = PropType.None;
+        }
     }
 
     /// <summary>
@@ -182,6 +214,11 @@ public class InventorySwitch : MonoBehaviour
         EquipmenManager.instance.ShowEquipment();
     }
 
+    [Header("合成結果資料")]
+    public InventoryItem resultInventoryItem;
+    public Item resultItem;
+
+
     /// <summary>
     /// 檢查目前合成素材在組合表內是否有相同的資料
     /// </summary> 
@@ -191,6 +228,29 @@ public class InventorySwitch : MonoBehaviour
         for (int i = 0; i < itemMerge.Length; i++)
         {
             goMergeCurrent[i] = itemMerge[i].goItem;
+        }
+
+        // var 無類型，可存放任何類型資料-不嚴謹的類型，容易導致錯誤
+        // 合成表.所有合成資料.尋找(資料=>連續檢查-檢查兩筆陣列是否相等) 
+        var result = mergeTable.allMergeData.Where(x => Enumerable.SequenceEqual(x.goMergo, goMergeCurrent));
+
+        // 遍尋回圈(類型 取得資料 在指定陣列集合內 陣列集合名稱)
+        // 此處的 取的資料會抓取 在 指定陣列集合內的 每一筆資料
+
+        foreach(var mergeResult in result)
+        {
+            //print("匹配的合成結果：" + mergeResult.goMergeResult.name);
+
+            Prop mergeResultProp = mergeResult.goMergeResult.GetComponent<Prop>();
+
+            resultInventoryItem.hasProp = true;
+            resultInventoryItem.imgProp.sprite = mergeResultProp.sprProp;
+            resultInventoryItem.imgProp.enabled = true;
+            resultInventoryItem.textProp.text = "1";
+
+            resultItem.goItem = mergeResultProp.goProp;
+            resultItem.count = 1;
+            resultItem.propType = mergeResultProp.propType;
         }
     }
     #endregion
